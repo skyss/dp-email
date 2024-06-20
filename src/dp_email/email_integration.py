@@ -46,7 +46,7 @@ class Message:
     senderAddress: str  # noqa: N815 - must match the API
 
 
-def get_email_client(connection_string:str) -> EmailClient:
+def get_email_client(connection_string: str) -> EmailClient:
     """Create an azure communication service email client."""
     if not connection_string:
         connection_string = get_secret(
@@ -56,7 +56,7 @@ def get_email_client(connection_string:str) -> EmailClient:
     return EmailClient.from_connection_string(connection_string)
 
 
-def send_email(email_client:EmailClient, message: Message) -> str | JSON:
+def send_email(email_client: EmailClient, message: Message) -> str | JSON:
     """Send email via Azure Communication Service."""
     try:
         logger.info(f"Sending email via Azure Communication Service: {message=}")
