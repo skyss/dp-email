@@ -1,7 +1,7 @@
 """Integration with Azure Key Vault Secrets."""
 
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential  # type: ignore [import]
+from azure.keyvault.secrets import SecretClient  # type: ignore [import]
 
 
 def get_secret(vault_url: str, secret_name: str) -> str:

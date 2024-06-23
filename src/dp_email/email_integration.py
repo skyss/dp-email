@@ -4,9 +4,9 @@ from collections.abc import MutableMapping
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from azure.communication.email import EmailClient
-from azure.core.exceptions import HttpResponseError
-from loguru import logger
+from azure.communication.email import EmailClient  # type: ignore [import]
+from azure.core.exceptions import HttpResponseError  # type: ignore [import]
+from loguru import logger  # type: ignore [import]
 
 from dp_email.secret_integration import get_secret
 
@@ -39,7 +39,10 @@ class Recipients:
 
 @dataclass
 class Message:
-    """Email message."""
+    """Email message.
+
+    Note: The sender address must be a verified email address in the Azure Communication Service.
+    """
 
     content: Content
     recipients: Recipients
@@ -61,7 +64,30 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
     try:
         logger.info(f"Sending email via Azure Communication Service: {message=}")
         poller = email_client.begin_send(asdict(message))
-        return poller.result()
+        return poller.result()  # type: ignore [no-any-return]
     except HttpResponseError:
         logger.exception("Failed to send email via Azure Communication Service")
         return "Failed to send email via Azure Communication Service"
+
+
+def build_message(
+    subject: str,
+    html: str,
+    to_address: str,
+    sender_address: str,
+) -> Message:
+    """Build an email message.
+
+    Helper function to build an email message.
+    """
+    return Message(
+        content=Content(
+            subject=subject,
+            plainText=html,
+            html=html,
+        ),
+        recipients=Recipients(
+            to=[Recipient(address=to_address, displayName=to_address)],
+        ),
+        senderAddress=sender_address,
+    )
