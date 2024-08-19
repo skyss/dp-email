@@ -40,13 +40,8 @@ class Recipients:
 @dataclass
 class Attachment:
     name: str
-    contentBytesBase64: str
-    attachmentType: str
-
-
-@dataclass
-class Attachments:
-    attachments: list[Attachment]
+    contentInBase64: str
+    contentType: str
 
 
 @dataclass
@@ -59,7 +54,7 @@ class Message:
     content: Content
     recipients: Recipients
     senderAddress: str  # noqa: N815 - must match the API
-    attachments: Optional[Attachments] = None
+    attachments: Optional[list[Attachment]]
 
 
 def get_email_client(connection_string: str) -> EmailClient:
