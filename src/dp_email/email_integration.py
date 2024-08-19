@@ -39,8 +39,8 @@ class Recipients:
 
 @dataclass
 class Attachment:
-    title: str
-    base64Content: str
+    name: str
+    contentBytesBase64: str
     attachmentType: str
 
 
