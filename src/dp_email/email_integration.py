@@ -66,7 +66,7 @@ def get_email_client(connection_string: str) -> EmailClient:
     """Create an azure communication service email client."""
     if not connection_string:
         connection_string = get_secret(
-            "https://kvsubdevndp.vault.azure.net/",
+            "https://skyss-hub-keyvault.vault.azure.net/",
             "communication-service-endpoint",
         )
     return EmailClient.from_connection_string(connection_string)
