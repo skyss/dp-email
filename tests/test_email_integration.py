@@ -5,6 +5,7 @@ from dp_email.email_integration import Content, Message, Recipient, Recipients, 
 
 def test_that_message_converts_to_dict():
     expected_message = {
+        "attachments": None,
         "content": {
             "subject": "This is the subject",
             "plainText": "This is the body",
@@ -48,3 +49,4 @@ def test_that_build_message_returns_message():
     assert message.content.subject == "This is the subject"
     assert message.content.plainText == "<html><h1>This is the body</h1></html>"
     assert message.content.html == "<html><h1>This is the body</h1></html>"
+

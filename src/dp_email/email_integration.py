@@ -1,8 +1,8 @@
 """Integrations with Azure Email functionality."""
-
+import base64
 from collections.abc import MutableMapping
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Optional
 
 from azure.communication.email import EmailClient  # type: ignore [import]
 from azure.core.exceptions import HttpResponseError  # type: ignore [import]
@@ -38,6 +38,18 @@ class Recipients:
 
 
 @dataclass
+class Attachment:
+    title: str
+    base64Content: str
+    attachmentType: str
+
+
+@dataclass
+class Attachments:
+    attachments: list[Attachment]
+
+
+@dataclass
 class Message:
     """Email message.
 
@@ -47,6 +59,7 @@ class Message:
     content: Content
     recipients: Recipients
     senderAddress: str  # noqa: N815 - must match the API
+    attachments: Optional[Attachments] = None
 
 
 def get_email_client(connection_string: str) -> EmailClient:
@@ -71,10 +84,10 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
 
 
 def build_message(
-    subject: str,
-    html: str,
-    to_address: str,
-    sender_address: str,
+        subject: str,
+        html: str,
+        to_address: str,
+        sender_address: str,
 ) -> Message:
     """Build an email message.
 
