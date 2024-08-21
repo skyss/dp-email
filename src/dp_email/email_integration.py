@@ -17,9 +17,12 @@ JSON = MutableMapping[str, Any]
 class Content:
     """Content of an email."""
 
+    def __post_init__(self: Self) -> None:  # noqa: D105
+        if self.plainText is not None and self.html is not None:
+            raise SetEitherHtmlOrPlainTextError
     subject: str
-    plainText: str  # noqa: N815 - must match the API
-    html: str
+    plainText: str | None = None  # noqa: N815 - must match the API
+    html: str | None = None
 
 
 @dataclass
@@ -101,3 +104,13 @@ def build_message(
         ),
         senderAddress=sender_address,
     )
+
+
+class SetEitherHtmlOrPlainTextError(Exception):
+    """Represents an exception raised when an email has both plaintext and html set."""
+
+    def __init__(  # noqa: D107
+            self: Self,
+            message: str = "Either plainText or html should be set, but not both.",
+    ) -> None:
+        super().__init__(message)
