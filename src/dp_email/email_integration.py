@@ -56,7 +56,7 @@ class Message:
     content: Content
     recipients: Recipients
     senderAddress: str  # noqa: N815 - must match the API
-    attachments: list[Attachment] | None
+    attachments: list[Attachment] | None = None
 
 
 def get_email_client(connection_string: str) -> EmailClient:
