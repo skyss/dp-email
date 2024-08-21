@@ -4,7 +4,7 @@ import os
 from dataclasses import asdict
 from pathlib import Path
 
-import dp_email.email_integration
+import dp_email.email_integration  # type: ignore  # noqa: PGH003
 import pytest
 
 
@@ -37,6 +37,7 @@ def test_that_message_converts_to_dict():
             to=[dp_email.email_integration.Recipient(address="test@vlfk.no", displayName="Test Testesen")],
         ),
         senderAddress="DoNotReply@longguid.azurecomm.net",
+        attachments=None,
     )
 
     assert expected_message == asdict(message)
@@ -90,11 +91,12 @@ def test_that_build_message_with_attachments_returns_message():
     ]
 
 
-@pytest.mark.manual_trigger()
+@pytest.mark.slow(reason="Depends on VPN, an ENV, and manual modification of the test case, ie. add a recipient")
 def test_email_with_attachment():
     """An integration test that actually sends a pdf to the recipient required.
 
-    You need to add the required ENV / Hardcode the connection string, as well as adding a valid recipient.
+    You need to add the required ENV / Hardcode the connection string, as well as adding a valid recipient +
+    be connected to the Skyss Azure VPN, in order to access the keyvault.
     """
 
     def read_file_as_base64(path: str) -> str:
