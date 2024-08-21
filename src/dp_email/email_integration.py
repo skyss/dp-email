@@ -2,13 +2,13 @@
 
 from collections.abc import MutableMapping
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Self
 
 from azure.communication.email import EmailClient  # type: ignore [import]
 from azure.core.exceptions import HttpResponseError  # type: ignore [import]
 from loguru import logger  # type: ignore [import]
 
-from dp_email.secret_integration import get_secret
+from dp_email.secret_integration import get_secret  # type: ignore [import]
 
 JSON = MutableMapping[str, Any]
 
@@ -20,6 +20,7 @@ class Content:
     def __post_init__(self: Self) -> None:  # noqa: D105
         if self.plainText is not None and self.html is not None:
             raise SetEitherHtmlOrPlainTextError
+
     subject: str
     plainText: str | None = None  # noqa: N815 - must match the API
     html: str | None = None
@@ -84,10 +85,11 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
 
 
 def build_message(
-    subject: str,
-    html: str,
-    to_address: str,
-    sender_address: str,
+        subject: str,
+        html: str,
+        to_address: str,
+        sender_address: str,
+        plain_text: str | None = None,
 ) -> Message:
     """Build an email message.
 
@@ -96,7 +98,7 @@ def build_message(
     return Message(
         content=Content(
             subject=subject,
-            plainText=html,
+            plainText=plain_text,
             html=html,
         ),
         recipients=Recipients(
