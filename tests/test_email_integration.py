@@ -6,15 +6,16 @@ from pathlib import Path
 
 import dp_email.email_integration  # type: ignore  # noqa: PGH003
 import pytest
+from dp_email.email_integration import SetEitherHtmlOrPlainTextError
 
 
 def test_that_message_converts_to_dict():
     expected_message = {
         "attachments": None,
         "content": {
+            "html": None,
             "subject": "This is the subject",
             "plainText": "This is the body",
-            "html": "<html><h1>This is the body</h1></html>",
         },
         "recipients": {
             "to": [
@@ -31,7 +32,6 @@ def test_that_message_converts_to_dict():
         content=dp_email.email_integration.Content(
             subject="This is the subject",
             plainText="This is the body",
-            html="<html><h1>This is the body</h1></html>",
         ),
         recipients=dp_email.email_integration.Recipients(
             to=[dp_email.email_integration.Recipient(address="test@vlfk.no", displayName="Test Testesen")],
@@ -53,7 +53,6 @@ def test_that_build_message_returns_message():
 
     assert isinstance(message, dp_email.email_integration.Message)
     assert message.content.subject == "This is the subject"
-    assert message.content.plainText == "<html><h1>This is the body</h1></html>"
     assert message.content.html == "<html><h1>This is the body</h1></html>"
 
 
@@ -63,7 +62,6 @@ def test_that_build_message_with_attachments_returns_message():
         content=dp_email.email_integration.Content(
             subject="This is the subject",
             plainText="This is the body",
-            html="<html><h1>This is the body</h1></html>",
         ),
         recipients=dp_email.email_integration.Recipients(
             to=[dp_email.email_integration.Recipient(address="test@vlfk.no", displayName="Anders Rørvik")],
@@ -81,7 +79,6 @@ def test_that_build_message_with_attachments_returns_message():
     assert isinstance(message, dp_email.email_integration.Message)
     assert message.content.subject == "This is the subject"
     assert message.content.plainText == "This is the body"
-    assert message.content.html == "<html><h1>This is the body</h1></html>"
     assert message.attachments == [
         dp_email.email_integration.Attachment(
             name="test.pdf",
@@ -89,6 +86,21 @@ def test_that_build_message_with_attachments_returns_message():
             contentInBase64=content_bytes_base64str,
         ),
     ]
+
+
+def test_that_both_emailbody_and_plaintext_is_not_valid():
+    with pytest.raises(SetEitherHtmlOrPlainTextError):
+        dp_email.email_integration.Message(
+            content=dp_email.email_integration.Content(
+                subject="This is the subject",
+                plainText="This is the body",
+                html="<html><h1>This is the body</h1></html>",
+            ),
+            recipients=dp_email.email_integration.Recipients(
+                to=[dp_email.email_integration.Recipient(address="test@test.no", displayName="Test tes")],
+            ),
+            senderAddress="DoNotReply@73a8fc69-ef8f-4d6a-ae4a-e46be871dce9.azurecomm.net",
+        )
 
 
 @pytest.mark.slow(reason="Depends on VPN, an ENV, and manual modification of the test case, ie. add a recipient")
