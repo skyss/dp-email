@@ -120,10 +120,9 @@ def test_email_with_attachment():
         content=dp_email.email_integration.Content(
             subject="This is the subject",
             plainText="This is the body",
-            html="<html><h1>This is the body</h1></html>",
         ),
         recipients=dp_email.email_integration.Recipients(
-            to=[dp_email.email_integration.Recipient(address="anders.rorvik@knowit.no", displayName="Anders Rørvik")],
+            to=[dp_email.email_integration.Recipient(address="anders.rorvik@gmail.com", displayName="Anders Rørvik")],
         ),
         senderAddress="DoNotReply@73a8fc69-ef8f-4d6a-ae4a-e46be871dce9.azurecomm.net",
         attachments=[
@@ -140,3 +139,6 @@ def test_email_with_attachment():
     )
     result = dp_email.email_integration.send_email(email_client, message)
     logging.info("Email sending result: %s", result)
+    assert result["status"] == "Succeeded"
+    assert result["id"] is not None
+    assert result["error"] is None
