@@ -113,7 +113,7 @@ def test_email_with_attachment():
     """
 
     def read_file_as_base64(path: str) -> str:
-        with Path.open(path, "rb") as f:
+        with Path(path).open("rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
 
     content_bytes_base64str = read_file_as_base64("test.pdf")
