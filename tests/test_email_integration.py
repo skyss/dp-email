@@ -1,12 +1,12 @@
 import base64
-import logging
 import os
 from dataclasses import asdict
 from pathlib import Path
 
-import dp_email.email_integration  # type: ignore  # noqa: PGH003
+import dp_email.email_integration
 import pytest
 from dp_email.email_integration import SetEitherHtmlOrPlainTextError
+from loguru import logger
 
 
 def test_that_message_converts_to_dict():
@@ -138,7 +138,7 @@ def test_email_with_attachment():
         os.environ.get("AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING"),
     )
     result = dp_email.email_integration.send_email(email_client, message)
-    logging.info("Email sending result: %s", result)
+    logger.info(f"Email sending result: {result}")
     assert result["status"] == "Succeeded"
     assert result["id"] is not None
     assert result["error"] is None
