@@ -4,7 +4,9 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
+from azure.communication.email import EmailClient
 from loguru import logger
+from mjml import mjml_to_html
 
 import dp_email.email_integration
 from dp_email.email_integration import SetEitherHtmlOrPlainTextError
@@ -135,11 +137,43 @@ def test_email_with_attachment():
         ],
     )
 
-    email_client = dp_email.email_integration.get_email_client(
-        os.environ.get("AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING", ""),
-    )
+    email_client = _get_email_client()
     result = dp_email.email_integration.send_email(email_client, message)
     logger.info(f"Email sending result: {result}")
     assert result["status"] == "Succeeded"
     assert result["id"] is not None
     assert result["error"] is None
+
+
+@pytest.mark.slow(reason="Depends on VPN, an ENV, and manual modification of the test case, ie. add a recipient")
+def test_email_with_html_content_from_mjml():
+    """An integration test that actually sends a pdf to the recipient required.
+
+    You need to add the required ENV / Hardcode the connection string, as well as adding a valid recipient +
+    be connected to the Skyss Azure VPN, in order to access the keyvault.
+    """
+    with Path.open("kontrakt.mjml", "rb") as mjml_fp:
+        result = mjml_to_html(mjml_fp)
+    assert not result.errors
+    html: str = result.html
+
+    message = dp_email.email_integration.Message(
+        content=dp_email.email_integration.Content(subject="This is the subject", html=html),
+        recipients=dp_email.email_integration.Recipients(
+            to=[dp_email.email_integration.Recipient(address="anders.rorvik@knowit.no", displayName="Test testesen")],
+        ),
+        senderAddress="DoNotReply@73a8fc69-ef8f-4d6a-ae4a-e46be871dce9.azurecomm.net",
+    )
+
+    email_client = _get_email_client()
+    result = dp_email.email_integration.send_email(email_client, message)
+    logger.info(f"Email sending result: {result}")
+    assert result["status"] == "Succeeded"
+    assert result["id"] is not None
+    assert result["error"] is None
+
+
+def _get_email_client() -> EmailClient:
+    return dp_email.email_integration.get_email_client(
+        os.environ.get("AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING", ""),
+    )
