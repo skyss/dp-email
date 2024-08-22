@@ -77,7 +77,9 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
     """Send email via Azure Communication Service."""
     try:
         logger.info(f"Sending email via Azure Communication Service: {message=}")
-        poller = email_client.begin_send(asdict(message))
+        # Remove any entries where the value of the Key is None
+        filtered_message_dict = {k: v for k, v in asdict(message).items() if v is not None}
+        poller = email_client.begin_send(filtered_message_dict)
         return poller.result()  # type: ignore [no-any-return]
     except HttpResponseError:
         logger.exception("Failed to send email via Azure Communication Service")
@@ -85,11 +87,11 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
 
 
 def build_message(
-    subject: str,
-    html: str,
-    to_address: str,
-    sender_address: str,
-    plain_text: str | None = None,
+        subject: str,
+        html: str,
+        to_address: str,
+        sender_address: str,
+        plain_text: str | None = None,
 ) -> Message:
     """Build an email message.
 
@@ -112,7 +114,7 @@ class SetEitherHtmlOrPlainTextError(Exception):
     """Represents an exception raised when an email has both plaintext and html set."""
 
     def __init__(  # noqa: D107
-        self: Self,
-        message: str = "Either plainText or html should be set, but not both.",
+            self: Self,
+            message: str = "Either plainText or html should be set, but not both.",
     ) -> None:
         super().__init__(message)
