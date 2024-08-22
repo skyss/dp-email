@@ -3,10 +3,11 @@ import os
 from dataclasses import asdict
 from pathlib import Path
 
-import dp_email.email_integration
 import pytest
-from dp_email.email_integration import SetEitherHtmlOrPlainTextError
 from loguru import logger
+
+import dp_email.email_integration
+from dp_email.email_integration import SetEitherHtmlOrPlainTextError
 
 
 def test_that_message_converts_to_dict():
