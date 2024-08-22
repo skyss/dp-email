@@ -136,7 +136,7 @@ def test_email_with_attachment():
     )
 
     email_client = dp_email.email_integration.get_email_client(
-        os.environ.get("AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING"),
+        os.environ.get("AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING", ""),
     )
     result = dp_email.email_integration.send_email(email_client, message)
     logger.info(f"Email sending result: {result}")
