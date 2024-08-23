@@ -1,16 +1,17 @@
 [project]
 name = "dp-email"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.3.0"
+description = "This lib is useful for sending emails with plaintext / html, and with attachments. It can also work with output generated from mjml"
 authors = [{ name = "John Erik Sloper", email = "john.erik.sloper@vlfk.no" }]
 dependencies = [
     "azure-identity>=1.17.0",
     "azure-communication-email>=1.0.0",
     "azure-keyvault-secrets>=4.8.0",
     "loguru>=0.7.2",
+    "mjml>=0.11.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">= 3.10"
 
 [build-system]
 requires = ["hatchling"]
@@ -19,7 +20,7 @@ build-backend = "hatchling.build"
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "pytest>=8.2.2",
+    "pytest>=8.3.2",
     "mypy>=1.10.0",
     "pre-commit>=3.7.1",
 ]
@@ -40,14 +41,14 @@ packages = ["src/dp_email"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
-    "S101",   # asserts allowed in tests...
+    "S101", # asserts allowed in tests...
     "ANN201", # Don't care about type annotations in tests.
-    "D100",   # Don't care about docstring in tests.
-    "D103",   # Don't care about docstring in tests.
-    "ARG",    # Unused function args -> fixtures nevertheless are functionally relevant.
-    "FBT",    # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    "D100", # Don't care about docstring in tests.
+    "D103", # Don't care about docstring in tests.
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant.
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
 ]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.10"
 exclude = ["tests"]

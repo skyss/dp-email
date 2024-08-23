@@ -7,6 +7,7 @@
 #   all-features: false
 #   with-sources: false
 #   generate-hashes: false
+#   universal: false
 
 -e file:.
 azure-common==1.1.28
@@ -24,6 +25,8 @@ azure-keyvault-secrets==4.8.0
     # via dp-email
 azure-mgmt-core==1.4.0
     # via azure-communication-email
+beautifulsoup4==4.12.3
+    # via mjml
 certifi==2024.6.2
     # via msrest
     # via requests
@@ -39,6 +42,12 @@ cryptography==42.0.8
     # via pyjwt
 distlib==0.3.8
     # via virtualenv
+docopt==0.6.2
+    # via mjml
+dotmap==1.3.30
+    # via mjml
+exceptiongroup==1.2.2
+    # via pytest
 filelock==3.15.3
     # via virtualenv
 identify==2.5.36
@@ -50,7 +59,13 @@ iniconfig==2.0.0
 isodate==0.6.1
     # via azure-keyvault-secrets
     # via msrest
+jinja2==3.1.4
+    # via mjml
 loguru==0.7.2
+    # via dp-email
+markupsafe==2.1.5
+    # via jinja2
+mjml==0.11.0
     # via dp-email
 msal==1.28.1
     # via azure-identity
@@ -80,7 +95,7 @@ pycparser==2.22
     # via cffi
 pyjwt==2.8.0
     # via msal
-pytest==8.2.2
+pytest==8.3.2
 pyyaml==6.0.1
     # via pre-commit
 requests==2.32.3
@@ -93,6 +108,11 @@ requests-oauthlib==2.0.0
 six==1.16.0
     # via azure-core
     # via isodate
+soupsieve==2.6
+    # via beautifulsoup4
+tomli==2.0.1
+    # via mypy
+    # via pytest
 typing-extensions==4.12.2
     # via azure-core
     # via azure-identity
