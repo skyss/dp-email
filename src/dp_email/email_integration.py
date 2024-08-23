@@ -75,7 +75,10 @@ def get_email_client(connection_string: str) -> EmailClient:
 
 
 def send_email(email_client: EmailClient, message: Message) -> str | JSON:
-    """Send email via Azure Communication Service."""
+    """Send email via Azure Communication Service.
+
+    See https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/send-email-advanced/send-email-with-attachments?tabs=connection-string&pivots=programming-language-python.
+    """
     try:
         logger.info(f"Sending email via Azure Communication Service: {message=}")
         # Remove any entries where the value of the Key is None
