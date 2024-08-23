@@ -2,11 +2,12 @@
 
 from collections.abc import MutableMapping
 from dataclasses import asdict, dataclass
-from typing import Any, Self
+from typing import Any
 
 from azure.communication.email import EmailClient
 from azure.core.exceptions import HttpResponseError
 from loguru import logger
+from typing_extensions import Self
 
 from dp_email.secret_integration import get_secret
 
@@ -42,7 +43,7 @@ class Recipients:
 
 
 @dataclass
-class ha:
+class Attachment:
     """Represents an email attachment structure, equal to what the API expects."""
 
     name: str
