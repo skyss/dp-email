@@ -1,6 +1,6 @@
 [project]
 name = "dp-email"
-version = "0.2.0"
+version = "0.3.0"
 description = "Add your description here"
 authors = [{ name = "John Erik Sloper", email = "john.erik.sloper@vlfk.no" }]
 dependencies = [
