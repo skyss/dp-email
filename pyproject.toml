@@ -1,7 +1,7 @@
 [project]
 name = "dp-email"
 version = "0.3.0"
-description = "Add your description here"
+description = "This lib is useful for sending emails with plaintext / html, and with attachments. It can also work with output generated from mjml"
 authors = [{ name = "John Erik Sloper", email = "john.erik.sloper@vlfk.no" }]
 dependencies = [
     "azure-identity>=1.17.0",
