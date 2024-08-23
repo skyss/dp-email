@@ -11,7 +11,7 @@ dependencies = [
     "mjml>=0.11.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">= 3.10"
 
 [build-system]
 requires = ["hatchling"]
@@ -50,5 +50,5 @@ packages = ["src/dp_email"]
 ]
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.10"
 exclude = ["tests"]
