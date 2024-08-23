@@ -1,6 +1,6 @@
 [project]
 name = "dp-email"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 authors = [{ name = "John Erik Sloper", email = "john.erik.sloper@vlfk.no" }]
 dependencies = [
@@ -41,12 +41,12 @@ packages = ["src/dp_email"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
-    "S101",   # asserts allowed in tests...
+    "S101", # asserts allowed in tests...
     "ANN201", # Don't care about type annotations in tests.
-    "D100",   # Don't care about docstring in tests.
-    "D103",   # Don't care about docstring in tests.
-    "ARG",    # Unused function args -> fixtures nevertheless are functionally relevant.
-    "FBT",    # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    "D100", # Don't care about docstring in tests.
+    "D103", # Don't care about docstring in tests.
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant.
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
 ]
 
 [tool.mypy]
