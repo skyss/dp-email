@@ -64,19 +64,6 @@ class Message:
     attachments: list[Attachment] | None = None
 
 
-@dataclass
-class TestMessage:
-    """Email message.
-
-    Note: The sender address must be a verified email address in the Azure Communication Service.
-    """
-
-    content: Content
-    recipients: Recipients
-    senderAddress: str  # noqa: N815 - must match the API
-    attachments: list[Attachment] | None = None
-
-
 def get_email_client(connection_string: str) -> EmailClient:
     """Create an azure communication service email client."""
     if not connection_string:
@@ -87,13 +74,18 @@ def get_email_client(connection_string: str) -> EmailClient:
     return EmailClient.from_connection_string(connection_string)
 
 
-def send_email(email_client: EmailClient, message: Message) -> str | JSON:
+def send_email(email_client: EmailClient, message: Message, mode: str = "test") -> str | JSON:  # noqa: ARG001, FBT001
     """Send email via Azure Communication Service.
 
     See https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/send-email-advanced/send-email-with-attachments?tabs=connection-string&pivots=programming-language-python.
     """
     try:
-        logger.info(f"Sending email via Azure Communication Service: {message=}")
+        logger.info(
+            f"Sending email via Azure Communication Service: {message=}",
+        )
+        if mode == "test":
+            logger.info("Running in test mode, sending to dev email instead.")
+            message = _build_dev_message(message)
         # Remove any entries where the value of the Key is None
         filtered_message_dict = {k: v for k, v in asdict(message).items() if v is not None}
         poller = email_client.begin_send(filtered_message_dict)
@@ -101,6 +93,27 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
     except HttpResponseError:
         logger.exception("Failed to send email via Azure Communication Service")
         return "Failed to send email via Azure Communication Service"
+
+
+def _build_dev_message(message: Message) -> JSON:
+    """Build a message for development purposes."""
+    dev_email = get_secret(
+        "https://skyss-hub-keyvault.vault.azure.net/",
+        "dev-email",
+    )
+    dev_recipient = Recipient(address=dev_email, displayName="dev_email")
+
+    message_content = message.content
+    message_content.subject = f"""INTENDED RECIPIENTS:
+                                 {", ".join([r.address for r in message.recipients])}
+
+                                 {message_content.subject}"""
+    return Message(
+        content=message_content,
+        recipients=dev_recipient,
+        senderAddress=message.senderAddress,
+        attachments=message.attachments,
+    )
 
 
 def build_message(
