@@ -16,13 +16,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Python Setup Rye
-        uses: eifinger/setup-rye@v2.5.1
+    
+      - name: Add uv
+        uses: astral-sh/setup-uv@v2
         with:
           enable-cache: true
       - name: Install dependencies
-        run: rye sync
+        run: uv sync
       - name: Run pre-commit
-        run: rye run pre-commit run --all-files
+        run: uv run pre-commit run --all-files
       - name: Run tests
-        run: rye run pytest -v .
+        run: uv run pytest -v .
