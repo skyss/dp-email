@@ -74,7 +74,13 @@ def get_email_client(connection_string: str) -> EmailClient:
     return EmailClient.from_connection_string(connection_string)
 
 
-def send_email(email_client: EmailClient, message: Message, mode: str = "test") -> str | JSON:  # noqa: ARG001, FBT001
+def send_email(
+    email_client: EmailClient,
+    message: Message,
+    additional_test_recipients: Recipients = None,
+    *,
+    test_mode: bool = False,
+) -> str | JSON:
     """Send email via Azure Communication Service.
 
     See https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/send-email-advanced/send-email-with-attachments?tabs=connection-string&pivots=programming-language-python.
@@ -83,9 +89,9 @@ def send_email(email_client: EmailClient, message: Message, mode: str = "test") 
         logger.info(
             f"Sending email via Azure Communication Service: {message=}",
         )
-        if mode == "test":
+        if test_mode:
             logger.info("Running in test mode, sending to dev email instead.")
-            message = _build_dev_message(message)
+            message = build_test_message(message, additional_test_recipients)
         # Remove any entries where the value of the Key is None
         filtered_message_dict = {k: v for k, v in asdict(message).items() if v is not None}
         poller = email_client.begin_send(filtered_message_dict)
@@ -95,22 +101,26 @@ def send_email(email_client: EmailClient, message: Message, mode: str = "test") 
         return "Failed to send email via Azure Communication Service"
 
 
-def _build_dev_message(message: Message) -> JSON:
+def build_test_message(message: Message, additional_test_recipients: Recipients = None) -> Message:
     """Build a message for development purposes."""
-    dev_email = get_secret(
-        "https://skyss-hub-keyvault.vault.azure.net/",
-        "dev-email",
+    test_email = get_secret("https://skyss-prod-keyvault.vault.azure.net/", "test-email")
+    test_recipients = Recipients(
+        to=[Recipient(address=test_email, displayName="test_email")],
     )
-    dev_recipient = Recipient(address=dev_email, displayName="dev_email")
+    if additional_test_recipients:
+        test_recipients.to.extend(additional_test_recipients.to)
 
     message_content = message.content
     message_content.subject = f"""INTENDED RECIPIENTS:
-                                 {", ".join([r.address for r in message.recipients])}
+    {", ".join([r.address for r in message.recipients.to])}
 
-                                 {message_content.subject}"""
+    ORIGINAL SUBJECT:
+    -----------------
+    {message_content.subject}"""
+
     return Message(
         content=message_content,
-        recipients=dev_recipient,
+        recipients=test_recipients,
         senderAddress=message.senderAddress,
         attachments=message.attachments,
     )
