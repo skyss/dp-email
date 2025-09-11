@@ -77,7 +77,7 @@ def get_email_client(connection_string: str) -> EmailClient:
 def send_email(
     email_client: EmailClient,
     message: Message,
-    additional_test_recipients: Recipients = None,
+    additional_test_emails: list[str] | None = None,
     *,
     test_mode: bool = False,
 ) -> str | JSON:
@@ -91,7 +91,7 @@ def send_email(
         )
         if test_mode:
             logger.info("Running in test mode, sending to dev email instead.")
-            message = build_test_message(message, additional_test_recipients)
+            message = build_test_message(message, additional_test_emails)
         # Remove any entries where the value of the Key is None
         filtered_message_dict = {k: v for k, v in asdict(message).items() if v is not None}
         poller = email_client.begin_send(filtered_message_dict)
@@ -101,15 +101,12 @@ def send_email(
         return "Failed to send email via Azure Communication Service"
 
 
-def build_test_message(message: Message, additional_test_recipients: Recipients = None) -> Message:
+def build_test_message(message: Message, additional_test_emails: list[str] | None = None) -> Message:
     """Build a message for development purposes."""
-    test_email = get_secret("https://skyss-prod-keyvault.vault.azure.net/", "test-email")
-    test_recipients = Recipients(
-        to=[Recipient(address=test_email, displayName="test_email")],
-    )
-    if additional_test_recipients:
-        test_recipients.to.extend(additional_test_recipients.to)
-
+    test_emails = [get_secret("https://skyss-prod-keyvault.vault.azure.net/", "test-email")]
+    if additional_test_emails:
+        test_emails.extend(additional_test_emails)
+    test_recipients = Recipients(to=[Recipient(address=email, displayName=email) for email in test_emails])
     message_content = message.content
     message_content.subject = f"""INTENDED RECIPIENTS:
     {", ".join([r.address for r in message.recipients.to])}
