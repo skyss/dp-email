@@ -64,19 +64,6 @@ class Message:
     attachments: list[Attachment] | None = None
 
 
-@dataclass
-class TestMessage:
-    """Email message.
-
-    Note: The sender address must be a verified email address in the Azure Communication Service.
-    """
-
-    content: Content
-    recipients: Recipients
-    senderAddress: str  # noqa: N815 - must match the API
-    attachments: list[Attachment] | None = None
-
-
 def get_email_client(connection_string: str) -> EmailClient:
     """Create an azure communication service email client."""
     if not connection_string:
