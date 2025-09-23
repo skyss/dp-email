@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-    
+
       - name: Add uv
         uses: astral-sh/setup-uv@v2
         with:
