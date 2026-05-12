@@ -58,12 +58,14 @@ def test_that_build_message_returns_message():
         subject="This is the subject",
         html="<html><h1>This is the body</h1></html>",
         to_address="test@vlfk.no",
+        cc_to_address="cc@vlfk.no",
         sender_address="DoNotReply@longguid.azurecomm.net",
     )
 
     assert isinstance(message, dp_email.email_integration.Message)
     assert message.content.subject == "This is the subject"
     assert message.content.html == "<html><h1>This is the body</h1></html>"
+    assert message.recipients.cc[0].address == "cc@vlfk.no"
 
 
 def test_that_build_message_with_attachments_returns_message():
