@@ -9,7 +9,7 @@ from loguru import logger
 from mjml import mjml_to_html
 
 import dp_email.email_integration
-from dp_email.email_integration import SetEitherHtmlOrPlainTextError
+from dp_email.email_integration import JSON, SetEitherHtmlOrPlainTextError
 
 
 def test_that_message_converts_to_dict():
@@ -27,6 +27,12 @@ def test_that_message_converts_to_dict():
                     "displayName": "Test Testesen",
                 },
             ],
+            "cc": [
+                {
+                    "address": "cc@vlfk.no",
+                    "displayName": "Test Testesen",
+                },
+            ],
         },
         "senderAddress": "DoNotReply@longguid.azurecomm.net",
     }
@@ -38,6 +44,7 @@ def test_that_message_converts_to_dict():
         ),
         recipients=dp_email.email_integration.Recipients(
             to=[dp_email.email_integration.Recipient(address="test@vlfk.no", displayName="Test Testesen")],
+            cc=[dp_email.email_integration.Recipient(address="cc@vlfk.no", displayName="Test Testesen")],
         ),
         senderAddress="DoNotReply@longguid.azurecomm.net",
         attachments=None,
@@ -51,12 +58,14 @@ def test_that_build_message_returns_message():
         subject="This is the subject",
         html="<html><h1>This is the body</h1></html>",
         to_address="test@vlfk.no",
+        cc_to_address="cc@vlfk.no",
         sender_address="DoNotReply@longguid.azurecomm.net",
     )
 
     assert isinstance(message, dp_email.email_integration.Message)
     assert message.content.subject == "This is the subject"
     assert message.content.html == "<html><h1>This is the body</h1></html>"
+    assert message.recipients.cc[0].address == "cc@vlfk.no"
 
 
 def test_that_build_message_with_attachments_returns_message():
@@ -118,14 +127,19 @@ def test_email_with_attachment():
         with Path(path).open("rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
 
-    content_bytes_base64str = read_file_as_base64("test.pdf")
+    content_bytes_base64str = read_file_as_base64("tests/test.pdf")
     message = dp_email.email_integration.Message(
         content=dp_email.email_integration.Content(
             subject="This is the subject",
             plainText="This is the body",
         ),
         recipients=dp_email.email_integration.Recipients(
-            to=[dp_email.email_integration.Recipient(address="anders.rorvik@gmail.com", displayName="Anders Rørvik")],
+            to=[
+                dp_email.email_integration.Recipient(
+                    address="john.erik.sloper@skyss.no",
+                    displayName="John Erik Sloper",
+                ),
+            ],
         ),
         senderAddress="DoNotReply@73a8fc69-ef8f-4d6a-ae4a-e46be871dce9.azurecomm.net",
         attachments=[
@@ -138,7 +152,7 @@ def test_email_with_attachment():
     )
 
     email_client = _get_email_client()
-    result = dp_email.email_integration.send_email(email_client, message)
+    result: JSON = dp_email.email_integration.send_email(email_client, message)  # pyright: ignore[reportAssignmentType]
     logger.info(f"Email sending result: {result}")
     assert result["status"] == "Succeeded"
     assert result["id"] is not None
@@ -152,21 +166,22 @@ def test_email_with_html_content_from_mjml():
     You need to add the required ENV / Hardcode the connection string, as well as adding a valid recipient +
     be connected to the Skyss Azure VPN, in order to access the keyvault.
     """
-    with Path.open("kontrakt.mjml", "rb") as mjml_fp:
-        result = mjml_to_html(mjml_fp)
-    assert not result.errors
-    html: str = result.html
+    with Path("tests/kontrakt.mjml").open("rb") as mjml_fp:
+        result = mjml_to_html(mjml_fp)  # pyright: ignore[reportAssignmentType]
+    assert not result.errors  # pyright: ignore[reportAttributeAccessIssue]
+    html: str = result.html  # pyright: ignore[reportAttributeAccessIssue]
 
     message = dp_email.email_integration.Message(
         content=dp_email.email_integration.Content(subject="This is the subject", html=html),
         recipients=dp_email.email_integration.Recipients(
-            to=[dp_email.email_integration.Recipient(address="anders.rorvik@knowit.no", displayName="Test testesen")],
+            to=[dp_email.email_integration.Recipient(address="john.erik.sloper@skyss.no", displayName="Test testesen")],
+            cc=[dp_email.email_integration.Recipient(address="john.erik.sloper@skyss.no", displayName="CC CCesen")],
         ),
         senderAddress="DoNotReply@73a8fc69-ef8f-4d6a-ae4a-e46be871dce9.azurecomm.net",
     )
 
     email_client = _get_email_client()
-    result = dp_email.email_integration.send_email(email_client, message)
+    result: JSON = dp_email.email_integration.send_email(email_client, message)  # pyright: ignore[reportAssignmentType]
     logger.info(f"Email sending result: {result}")
     assert result["status"] == "Succeeded"
     assert result["id"] is not None

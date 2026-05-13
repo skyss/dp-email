@@ -1,7 +1,7 @@
 """Integrations with Azure Email functionality."""
 
 from collections.abc import MutableMapping
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from azure.communication.email import EmailClient
@@ -40,6 +40,7 @@ class Recipients:
     """List of recipients of an email."""
 
     to: list[Recipient]
+    cc: list[Recipient] = field(default_factory=list)
 
 
 @dataclass
@@ -90,12 +91,13 @@ def send_email(email_client: EmailClient, message: Message) -> str | JSON:
         return "Failed to send email via Azure Communication Service"
 
 
-def build_message(
+def build_message(  # noqa: PLR0913
     subject: str,
     html: str,
     to_address: str,
     sender_address: str,
     plain_text: str | None = None,
+    cc_to_address: str = "",
 ) -> Message:
     """Build an email message.
 
@@ -109,6 +111,7 @@ def build_message(
         ),
         recipients=Recipients(
             to=[Recipient(address=to_address, displayName=to_address)],
+            cc=[Recipient(address=cc_to_address, displayName=cc_to_address)],
         ),
         senderAddress=sender_address,
     )
