@@ -310,7 +310,7 @@ wheels = [
 
 [[package]]
 name = "dp-email"
-version = "0.3.0"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "azure-communication-email" },
