@@ -62,7 +62,7 @@ class Message:
     content: Content
     recipients: Recipients
     senderAddress: str  # noqa: N815 - must match the API
-    attachments: list[Attachment] | None = None
+    attachments: list[Attachment] = field(default_factory=list)
 
 
 def get_email_client(connection_string: str) -> EmailClient:

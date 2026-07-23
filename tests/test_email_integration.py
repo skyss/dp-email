@@ -14,7 +14,7 @@ from dp_email.email_integration import JSON, SetEitherHtmlOrPlainTextError
 
 def test_that_message_converts_to_dict():
     expected_message = {
-        "attachments": None,
+        "attachments": [],
         "content": {
             "html": None,
             "subject": "This is the subject",
@@ -47,7 +47,6 @@ def test_that_message_converts_to_dict():
             cc=[dp_email.email_integration.Recipient(address="cc@vlfk.no", displayName="Test Testesen")],
         ),
         senderAddress="DoNotReply@longguid.azurecomm.net",
-        attachments=None,
     )
 
     assert expected_message == asdict(message)
@@ -66,6 +65,7 @@ def test_that_build_message_returns_message():
     assert message.content.subject == "This is the subject"
     assert message.content.html == "<html><h1>This is the body</h1></html>"
     assert message.recipients.cc[0].address == "cc@vlfk.no"
+    assert message.attachments == []
 
 
 def test_that_build_message_with_attachments_returns_message():
